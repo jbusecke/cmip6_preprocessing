@@ -7,6 +7,12 @@ What's New
 v0.6.0 (unreleased)
 -------------------
 
+Internal Changes
+~~~~~~~~~~~~~~~~
+
+- Unit correction logic now uses pint-xarray under the hood (:pull:`160`, :issue:`31`).
+By `Tom Nicholas <https://github.com/TomNicholas>`_ and `Julius Busecke <https://github.com/jbusecke>`_
+
 
 .. _whats-new.0.5.0:
 

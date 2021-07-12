@@ -8,7 +8,7 @@ import pytest
 import xarray as xr
 
 from cmip6_preprocessing.grids import combine_staggered_grid
-from cmip6_preprocessing.preprocessing import combined_preprocessing
+from cmip6_preprocessing.preprocessing import _desired_units, combined_preprocessing
 from cmip6_preprocessing.utils import google_cmip_col, model_id_match
 
 
@@ -28,9 +28,9 @@ def data(
 ):
     zarr_kwargs = {
         "consolidated": True,
-        "decode_times": False,
-        # "decode_times": True,
-        # "use_cftime": True,
+        # "decode_times": False,
+        "decode_times": True,
+        "use_cftime": True,
     }
 
     cat = google_cmip_col(catalog=catalog).search(
@@ -230,6 +230,14 @@ def test_check_dim_coord_values_wo_intake(
     # make sure lon and lat are 2d
     assert len(ds.lon.shape) == 2
     assert len(ds.lat.shape) == 2
+
+    ## Check unit conversion
+    unit_dict = _desired_units()
+    for var, expected_unit in unit_dict.items():
+        if var in ds.variables:
+            unit = ds[var].attrs.get("units")
+            if unit:
+                assert unit == expected_unit
 
 
 # this fixture has to be redifined every time to account for different fail cases for each test

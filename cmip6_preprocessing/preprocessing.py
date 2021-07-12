@@ -1,9 +1,16 @@
 # Preprocessing for CMIP6 models
 import warnings
 
+import cf_xarray.units
 import numpy as np
 import pandas as pd
+import pint
+import pint_xarray
 import xarray as xr
+
+
+def _desired_units():
+    return {"lev": "m"}
 
 
 def cmip6_renaming_dict():
@@ -185,30 +192,21 @@ def replace_x_y_nominal_lat_lon(ds):
     return ds
 
 
-def unit_conversion_dict():
-    """Units conversion database"""
-    unit_dict = {"m": {"centimeters": 1 / 100}}
-    return unit_dict
+def correct_units(ds):
+    "Converts coordinates into SI units using pint-xarray"
+    # codify units with pint
+    # Perhaps this should be kept separately from the fixing?
+    # See https://github.com/jbusecke/cmip6_preprocessing/pull/160#discussion_r667041858
+    ds = ds.pint.quantify()
 
-
-def correct_units(ds, verbose=False, stric=False):
-    "Converts coordinates into SI units using `unit_conversion_dict`"
-    unit_dict = unit_conversion_dict()
-    ds = ds.copy()
-    # coordinate conversions
-    for co, expected_unit in [("lev", "m")]:
-        if co in ds.coords:
-            if "units" in ds.coords[co].attrs.keys():
-                unit = ds.coords[co].attrs["units"]
-                if unit != expected_unit:
-                    if unit in unit_dict[expected_unit].keys():
-                        factor = unit_dict[expected_unit][unit]
-                        ds.coords[co] = ds.coords[co] * factor
-                        ds.coords[co].attrs["units"] = expected_unit
-                    else:
-                        warnings.warn("No conversion found in unit_dict")
-            else:
-                warnings.warn(f'{ds.attrs["source_id"]}: No units found for {co}')
+    desired_units = _desired_units()
+    for var, target_unit in desired_units.items():
+        if var in ds:
+            if "units" in ds[var].attrs.keys():
+                # do we need to check this, or is pint smart enough to not touch the units, if its already the one we want?
+                # if ds["lev"].units != "m":
+                ds = ds.pint.to({var: target_unit})
+    ds = ds.pint.dequantify(format="~P")
     return ds
 
 

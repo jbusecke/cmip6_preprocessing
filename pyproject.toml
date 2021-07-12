@@ -20,7 +20,7 @@ quiet = false
 color = true
 
 [tool.isort]
-known_third_party = ["cftime", "dask", "fsspec", "numpy", "pandas", "pkg_resources", "pytest", "setuptools", "xarray", "xarrayutils", "xesmf", "xgcm", "yaml"]
+known_third_party = ["cf_xarray", "cftime", "dask", "fsspec", "numpy", "pandas", "pint", "pint_xarray", "pkg_resources", "pytest", "setuptools", "xarray", "xarrayutils", "xesmf", "xgcm", "yaml"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"

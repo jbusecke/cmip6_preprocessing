@@ -280,14 +280,6 @@ def test_correct_units():
     ds_test = correct_units(ds)
     assert ds_test.lev.attrs["units"] == "m"
     np.testing.assert_allclose(ds_test.lev.data, ds.lev.data / 100.0)
-    with pytest.warns(UserWarning):
-        ds_no_units = ds.copy()
-        ds_no_units.lev.attrs = {}
-        correct_units(ds_no_units)
-    with pytest.warns(UserWarning):
-        ds_unknown_units = ds.copy()
-        ds_unknown_units.lev.attrs["units"] = "whatever"
-        correct_units(ds_unknown_units)
 
 
 def test_maybe_convert_bounds_to_vertex():
