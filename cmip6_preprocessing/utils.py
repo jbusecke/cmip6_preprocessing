@@ -71,6 +71,7 @@ def cmip6_dataset_id(
         "table_id",
         "grid_label",
         "version",
+        "variable_id",
     ],
 ):
     """Creates a unique string id for e.g. saving files to disk from CMIP6 output
